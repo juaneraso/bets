@@ -1,77 +1,65 @@
-const { Bet, PRODUCT_TYPE } = require('../models/bet');
+const { Bet, PRODUCT_TYPE } = require("../models/bet");
 
+const getProducts = async (req, res) => {
+  try {
+    const products = await Bet.find();
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
-const createBet = async(req, res) => {
-    const bet = new Bet({
-        nombre: 'fsdafs',
-        descripcion:"djflakf",
-        precio : 10 ,
-        tipoProducto: PRODUCT_TYPE.CHANCE,
-        porcentajeComision: 50,
-        imagen : "hhfdl",
-    })
+const createProducts = async (req, res) => {
+  const bet = new Bet(req.body);
+
+  try {
     await bet.save();
-    res.status(201).json(bet)
+
+    res.status(201).json(bet);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-const getProducts = async(req, res) => {
+const getProductById = async (req, res) => {
+  const { id } = req.params;
 
-    const products  = await Bet.find();
-
-    res.status(201).json(products);
-};
-
-const createProducts = async(req , res) => {  
-    
-  try { 
-   
-    const bet = new Bet(req.body);
-
-    await bet.save();
-   
-    res.status(201).json(bet)}
-   
-
-    catch (error) { 
-     
-     res.status(500).json({error:error.message});
-
-    }
-
-
-};
-
-
-const getProductById = async(req, res) => {
-    
-    const {id} = req.params ;
-
+  try {
     const product = await Bet.findById(id);
-
-    res.status(201).json(product);
+    res.status(200).json(product);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-const updateProduct = async(req, res) => {
-    
-    const {id} = req.params ;
+const updateProduct = async (req, res) => {
+  const { id } = req.params;
 
-    res.status(201).json(id);
+  const { _id, key, ...rest } = req.body;
+
+  try {
+    const result = await Bet.findByIdAndUpdate(id, rest, { new: true });
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
-const deleteProduct = async(req, res) => {
-    
-    const {id} = req.params ;
+const deleteProduct = async (req, res) => {
+  const { id } = req.params;
 
-    res.status(201).json(id);
+  try {
+    const result = await Bet.deleteOne({ _id: id });
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
-
-
 
 module.exports = {
-    createBet,
-    getProducts,
-    createProducts,
-    getProductById,
-    updateProduct,
-    deleteProduct,
-}
+  getProducts,
+  createProducts,
+  getProductById,
+  updateProduct,
+  deleteProduct,
+};
